@@ -5,54 +5,23 @@
 #!/bin/bash
 
 # Configuration
-CPN_REPO_URL="https://raw.githubusercontent.com/filipholik/CPNA/main/CPN_Compiled_250829.zip"
+CPN_REPO_URL="https://raw.githubusercontent.com/filipholik/CPNA/main/CPN_250908.zip"
+FILE_NAME="CPN_250908.zip"
 TARGET_DIR="$HOME/CPN"
-FILE_NAME="CPN_Compiled_250829.zip"
-
-spin() {
-    local pid=$1
-    local message=$2
-    local -a marks=('/' '-' '\' '|')
-    local i=0
-    while kill -0 "$pid" 2>/dev/null; do
-        i=$(( (i+1) % 4 ))
-        printf "\r%s %s" "$message" "${marks[i]}"
-        sleep 0.2
-    done
-    printf "\r%s Done!    \n" "$message"
-}
-
-progress_bar() {
-    local duration=$1
-    local interval=0.1
-    local ticks=0
-
-    # Calculate total ticks using bc for float division
-    local total_ticks=$(echo "$duration / $interval" | bc)
-
-    while [ $ticks -le $total_ticks ]; do
-        # Calculate percent using bc
-        percent=$(echo "scale=0; $ticks * 100 / $total_ticks" | bc)
-        filled=$(( percent / 2 ))
-        empty=$(( 50 - filled ))
-
-        bar=$(printf "%${filled}s" | tr ' ' '#')
-        spaces=$(printf "%${empty}s")
-
-        printf "\r[%s%s] %d%%" "$bar" "$spaces" "$percent"
-
-        sleep $interval
-        ticks=$((ticks + 1))
-    done
-    echo
-    #echo -e "\nDone!"
-}
 
 # Installation of pre-requisites 
 echo "Installing the pre-requisites..."
-sudo apt install git
+sudo apt install git build-essential gcc-multilib protobuf-compiler protobuf-c-compiler libprotobuf-c-dev libprotobuf-dev clang-14 git python3-protobuf python3-twisted clang
+#sudo apt install pkg-config meson ninja-build python3-pyelftools libnuma-dev libpcap-dev libbpf-dev 
+# Missing: libclang
+
+echo "✅ Installation of the pre-requisites completed..."
 
 # Create destination directory if it doesn't exist
+if [ -d "$TARGET_DIR" ]; then
+    echo "⚠️  Target directory exists. Deleting: $TARGET_DIR"
+    rm -rf "$TARGET_DIR"
+fi
 echo "Creating the target directory..."
 mkdir -p "$TARGET_DIR"
 
@@ -68,7 +37,10 @@ if [ $? -eq 0 ]; then
     unzip "$TARGET_DIR/$FILE_NAME" -d "$TARGET_DIR"
 
     if [ $? -eq 0 ]; then
-        echo "✅ Unzip complete!"
+        # Delete the zip file
+        rm "$TARGET_DIR/$FILE_NAME"
+        echo "🗑️  Cleaning up... "
+        echo "✅ Installation complete!"
     else
         echo "❌ Failed to unzip."
     fi
@@ -76,5 +48,3 @@ else
     echo "Download failed."
     exit 1
 fi
-
-# Opening the file
