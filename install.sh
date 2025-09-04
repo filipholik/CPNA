@@ -5,8 +5,8 @@
 #!/bin/bash
 
 # Configuration
-CPN_REPO_URL="https://raw.githubusercontent.com/filipholik/CPNA/main/CPN_250908.zip"
-FILE_NAME="CPN_250908.zip"
+CPN_REPO_URL="https://raw.githubusercontent.com/filipholik/CPNA/main/CPN.zip"
+FILE_NAME="CPN.zip"
 TARGET_DIR="$HOME/CPN"
 
 # Installation of pre-requisites 
